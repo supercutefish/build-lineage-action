@@ -24,19 +24,19 @@ jobs:
           
       - name: Authenticating "repo" with GitHub Account
         run: |
-          git config --global user.email "frakod@pm.me"
-          git config --global user.name "0xB00B"
+          git config --global user.email "1404189569@qq.com"
+          git config --global user.name "supercutefish"
           
       - name: Enabling Caching (not sure)
         run: |
           export USE_CCACHE=1
           export CCACHE_EXEC=/usr/bin/ccache
-          ccache -M 25G
+          ccache -M 50G
           
       - name: Setting Up Local Repo
         run: |
-          ~/bin/repo init -u https://github.com/LineageOS/android.git -b lineage-15.1
-          ~/bin/repo sync
+          ~/bin/repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-17.0
+          ~/bin/repo sync -c -f --no-tags --no-clone-bundle -j`nproc`
           
       #Now ensure your Redmi 3S/3X is connected to your computer via the USB cable, with ADB and root enabled, and that you are in the ~/android/lineage/device/xiaomi/land folder.
       #Then run the extract-files.sh script:
@@ -45,11 +45,10 @@ jobs:
           
       - name: Setting Up Build Environment
         run: |
-          source build/envsetup.sh && breakfast land
-          
-      - name: Starting Build Process
-        run: |
-          croot && brunch land
+          export WITH_SU=true
+          git clone https://github.com/supercutefish/lineage_msm8937_32go_i25.git device/xtc
+          mv device/xtc/lineage_msm8937_32go_i25 device/xtc/msm8937_32go_i25 
+          source build/envsetup.sh 
       
       - name: Get current time
         uses: srfrnk/current-time@master
@@ -67,6 +66,6 @@ jobs:
             This is an Automatic Release by GitHub Actions.
           files: |
             $OUT/recovery.img
-            $OUT/lineage-*-land.zip
+            $OUT/lineage-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
